@@ -22,7 +22,7 @@ WHERE (
 ) > (
   SELECT SUM(a.qty * a.price)
   FROM actions a
-  WHERE a.supplier_id = (
+  WHERE a.supplier_id IN (
     SELECT supplier_id
     FROM suppliers
     WHERE supplier_name = 'IDT'
@@ -38,10 +38,11 @@ ORDER BY s.supplier_name;
 SELECT
   p.product_name
 FROM products p
-WHERE p.product_id NOT IN (
-  SELECT a.product_id
+WHERE NOT EXISTS (
+  SELECT 1
   FROM actions a
-  WHERE a.supplier_id = (
+  WHERE a.product_id = p.product_id
+    AND a.supplier_id IN (
     SELECT supplier_id
     FROM suppliers
     WHERE supplier_name = 'IDT'
@@ -62,7 +63,7 @@ WHERE c.category_id IN (
   WHERE p.product_id IN (
     SELECT a.product_id
     FROM actions a
-    WHERE a.supplier_id = (
+    WHERE a.supplier_id IN (
       SELECT supplier_id
       FROM suppliers
       WHERE supplier_name = 'IDT'
@@ -72,4 +73,3 @@ WHERE c.category_id IN (
   )
 )
 ORDER BY c.category_name;
-
